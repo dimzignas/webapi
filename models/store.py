@@ -40,7 +40,7 @@ class Store(Model):
             return None
 
     @staticmethod
-    @requires_login
+    #@requires_login
     def read_all():
         """Fungsi ini merespon API pada endpoint /api/v1.0/stores, yaitu dengan mencari semua data toko dalam database.
         @return: semua hasil pencarian toko
