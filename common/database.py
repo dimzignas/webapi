@@ -6,7 +6,7 @@ __author__ = 'dimz'
 
 
 class Database:
-    URI = os.environ.get('MONGODB_URI')
+    URI = os.environ.get('MONGODB_URI', ssl=True)
     CLIENT = pymongo.MongoClient(URI)
     DATABASE = CLIENT.get_database()
     ASCENDING = pymongo.ASCENDING
