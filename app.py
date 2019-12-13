@@ -3,6 +3,7 @@ import uuid
 from flask import render_template
 from config import connex_app, app
 from common.database import Database
+from views.users import user_blueprint
 
 __author__ = 'dimz'
 
@@ -14,6 +15,8 @@ app.config.update(
 
 # Read the swagger.yml file to configure the endpoints
 connex_app.add_api('openapi.yml')
+
+app.register_blueprint(user_blueprint, url_prefix='/app/users')
 
 
 @app.before_first_request
@@ -27,5 +30,5 @@ def home():
     return render_template("home.html")
 
 
-from views.users import user_blueprint
-app.register_blueprint(user_blueprint, url_prefix='/app/users')
+if __name__ == '__main__':
+    connex_app.run(host='0.0.0.0', port=61296, debug=True)
