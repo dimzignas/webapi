@@ -4,34 +4,17 @@ from models.user import User, UserErrors
 user_blueprint = Blueprint('users', __name__)
 
 
-@user_blueprint.route('/login', methods=['GET', 'POST'])
+@user_blueprint.route('/login')
 def login_user():
-    if request.method == 'POST':
-        email = request.form['email']
-        password = request.form['password']
-
-        try:
-            if User.is_login_valid(email, password):
-                session['email'] = email
-                return email
-        except UserErrors.UserError as e:
-            return e.message
-
     return render_template("users/login.html")  # Send the user an error if their login was invalid
 
 
-@user_blueprint.route('/register', methods=['GET', 'POST'])
+@user_blueprint.route('/register')
 def register_user():
-    if request.method == 'POST':
-        email = request.form['email']
-        password = request.form['password']
-
-        try:
-            if User.register_user(email, password):
-                session['email'] = email
-                return email
-        except UserErrors.UserError as e:
-            return e.message
-
     return render_template("users/register.html")  # Send the user an error if their login was invalid
+
+
+# @user_blueprint.route('/profile')
+# def profile():
+#     return render_template("users/profile.html")  # Send the user an error if their login was invalid
 
