@@ -15,7 +15,7 @@ class Database:
     @staticmethod
     def initialize():
         Database.CLIENT = pymongo.MongoClient(Database.URI)
-        Database.DATABASE = Database.CLIENT.get_default_database(default='webapi_db')
+        Database.DATABASE = Database.CLIENT.get_default_database(default=os.environ.get("DEFAULT_DB"))
 
     @staticmethod
     def insert(collection, data: Dict):
@@ -64,7 +64,7 @@ class Database:
         Database.DATABASE[collection].update(query, data, upsert=True)
 
     @staticmethod
-    def remove(collection: str, query: Dict) -> Dict:
+    def remove(collection: str, query: Dict):
         """Melakukan hapus records berdasarkan query pencarian yang diberikan
 
         @param collection: nama collection
