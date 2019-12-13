@@ -1,8 +1,6 @@
 import os
 import uuid
 from flask import render_template
-# from views.alerts import alert_blueprint
-# from views.stores import store_blueprint
 from views.users import user_blueprint
 from config import connex_app, app
 
@@ -18,8 +16,6 @@ app.config.update(
 connex_app.add_api('openapi.yml')
 
 app.register_blueprint(user_blueprint, url_prefix='/app/users')
-# app.register_blueprint(store_blueprint, url_prefix='/stores')
-# app.register_blueprint(products_blueprint, url_prefix='/products')
 
 
 # Create a URL route in our application for "/"
