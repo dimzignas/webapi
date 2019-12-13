@@ -16,6 +16,7 @@ connexion = {extras = ["swagger-ui"],version = "*"}
 flask-marshmallow = "==0.10.1"
 marshmallow = "==3.3.0"
 uwsgi = "==2.0.18"
+dnspython = "==1.16.0"
 
 [requires]
 python_version = "3.7"
