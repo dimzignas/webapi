@@ -8,7 +8,7 @@ __author__ = 'dimz'
 class Database:
     URI = os.environ.get('MONGODB_URI')
     CLIENT = pymongo.MongoClient(URI)
-    DATABASE = CLIENT.get_database()
+    DATABASE = CLIENT.get_default_database()
     ASCENDING = pymongo.ASCENDING
     DESCENDING = pymongo.DESCENDING
 
