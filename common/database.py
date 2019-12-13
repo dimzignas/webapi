@@ -1,3 +1,4 @@
+import os
 from typing import Dict
 import pymongo
 
@@ -5,7 +6,7 @@ __author__ = 'dimz'
 
 
 class Database:
-    URI = "mongodb://127.0.0.1:27017/webapi_db"
+    URI = os.environ.get('MONGODB_URI')
     CLIENT = pymongo.MongoClient(URI)
     DATABASE = CLIENT.get_database()
     ASCENDING = pymongo.ASCENDING

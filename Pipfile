@@ -15,6 +15,7 @@ passlib = "==1.7.2"
 connexion = {extras = ["swagger-ui"],version = "*"}
 flask-marshmallow = "==0.10.1"
 marshmallow = "==3.3.0"
+uwsgi = "==2.0.18"
 
 [requires]
 python_version = "3.7"
