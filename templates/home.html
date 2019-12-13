@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+{% block content %}
+    <div class="jumbotron">
+        <h1 class="display-4">Pencarian Bahan Masakan</h1>
+        <p class="lead">Kami melakukan scan online atas beberapa produk bahan masakan untuk Anda.</p>
+        <hr class="my-4">
+        <p>Hanya registrasi, dan Anda dapat mengakses layanan API kami.</p>
+        <p><a class="btn btn-primary btn-lg" href="{{ url_for('users.register_user') }}" role="button">Ayo mulai!</a></p>
+    </div>
+{% endblock %}
