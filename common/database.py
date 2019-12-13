@@ -6,11 +6,16 @@ __author__ = 'dimz'
 
 
 class Database:
-    URI = os.environ.get('MONGODB_URI')
-    CLIENT = pymongo.MongoClient(URI)
-    DATABASE = CLIENT.get_default_database()
+    URI = os.environ.get("MONGOLAB_URI")
+    CLIENT = None
+    DATABASE = None
     ASCENDING = pymongo.ASCENDING
     DESCENDING = pymongo.DESCENDING
+
+    @staticmethod
+    def initialize():
+        Database.CLIENT = pymongo.MongoClient(Database.URI)
+        Database.DATABASE = Database.CLIENT.get_default_database(default='webapi_db')
 
     @staticmethod
     def insert(collection, data: Dict):
