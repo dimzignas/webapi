@@ -28,13 +28,6 @@ paths:
         - admins
       summary: 'Mengambil data semua pengguna'
       description: 'Mengambil data semua pengguna'
-      parameters:
-        - name: api_key
-          in: query
-          description: API_KEY
-          required: true
-          schema:
-            type: string
       responses:
         '200':
           description: Sukses mengambil data seluruh pengguna
@@ -54,12 +47,6 @@ paths:
       summary: Mengambil profil pengguna menurut username
       description: Mengambil profil pengguna menurut username
       parameters:
-        - name: api_key
-          in: query
-          description: API_KEY
-          required: true
-          schema:
-            type: string
         - name: username
           in: path
           description: Username pengguna
@@ -84,12 +71,6 @@ paths:
       summary: Update pengguna
       description: Update pengguna
       parameters:
-        - name: api_key
-          in: query
-          description: API_KEY
-          required: true
-          schema:
-            type: string
         - name: username
           in: path
           description: Username pengguna yang akan di-update
@@ -138,12 +119,6 @@ paths:
       summary: Menghapus pengguna dari daftar
       description: Menghapus pengguna
       parameters:
-        - name: api_key
-          in: query
-          description: API_KEY
-          required: true
-          schema:
-            type: string
         - name: username
           in: path
           description: Username pengguna yang akan dihapus
@@ -163,12 +138,6 @@ paths:
       summary: Reset password pengguna
       description: Reset password pengguna
       parameters:
-        - name: api_key
-          in: query
-          description: API_KEY
-          required: true
-          schema:
-            type: string
         - name: username
           in: query
           description: Username pengguna yang akan di-reset password
@@ -237,7 +206,7 @@ paths:
         required: true
   /users/login:
     put:
-      operationId: models.user.User.login_user
+      operationId: models.user.User.login_user_with_password
       tags:
         - users
       summary: Login pengguna Web API
@@ -255,6 +224,31 @@ paths:
                 email:
                   type: string
                   example: 'fuland.gundah@example.mail.com'
+                password:
+                  type: string
+                  example: 'fuland1234!'
+        description: Pengguna yang akan login
+        required: true
+  /users/login_api:
+    put:
+      operationId: models.user.User.login_user_with_api_key
+      tags:
+        - users
+      summary: Login pengguna API
+      description: Login pengguna API dengan menggunakan API_KEY
+      responses:
+        '200':
+          description: Berhasil login
+      requestBody:
+        content:
+          application/json:
+            schema:
+              x-body-name: user
+              type: object
+              properties:
+                api_key:
+                  type: string
+                  example: 'd290f1ee-6c54-4b01-90e6-d701748f0851'
                 password:
                   type: string
                   example: 'fuland1234!'
@@ -291,13 +285,6 @@ paths:
         - admins
       summary: Membuat toko
       description: Membuat toko
-      parameters:
-        - name: api_key
-          in: query
-          description: API_KEY
-          required: true
-          schema:
-            type: string
       responses:
         '201':
           description: Berhasil membuat toko
@@ -339,12 +326,6 @@ paths:
       summary: Mengambil data salah satu toko menurut id
       description: Mengambil data salah satu toko menurut id
       parameters:
-        - name: api_key
-          in: query
-          description: API_KEY
-          required: true
-          schema:
-            type: string
         - name: store_id
           in: path
           description: Id toko yang akan diambil
@@ -369,12 +350,6 @@ paths:
       summary: Update sebuah toko
       description: Update sebuah toko
       parameters:
-        - name: api_key
-          in: query
-          description: API_KEY
-          required: true
-          schema:
-            type: string
         - name: store_id
           in: path
           description: Id toko yang akan di-update
@@ -423,12 +398,6 @@ paths:
       summary: Menghapus toko dari daftar
       description: Menghapus toko
       parameters:
-        - name: api_key
-          in: query
-          description: API_KEY
-          required: true
-          schema:
-            type: string
         - name: store_id
           in: path
           description: Id toko yang akan dihapus
@@ -448,12 +417,6 @@ paths:
       summary: 'Mencari data produk berdasarkan parameter tertentu'
       description: 'Mencari data produk berdasarkan parameter tertentu'
       parameters:
-        - name: api_key
-          in: query
-          description: API_KEY
-          required: true
-          schema:
-            type: string
         - name: f
           in: query
           description: field/atribut pencarian (item harus sama banyak dengan parameter v)
@@ -516,12 +479,6 @@ paths:
       summary: 'Mengambil sebagian data produk menurut resep yang dicari'
       description: 'Mengambil sebagian data produk menurut resep yang dicari'
       parameters:
-        - name: api_key
-          in: query
-          description: API_KEY
-          required: true
-          schema:
-            type: string
         - name: q
           in: query
           description: query pencarian
@@ -573,12 +530,6 @@ paths:
       summary: 'Mengambil sebagian data produk komplemen sebagai rekomendasi atas pencarian produk tertentu'
       description: 'Mengambil sebagian data produk komplemen sebagai rekomendasi atas pencarian produk tertentu'
       parameters:
-        - name: api_key
-          in: query
-          description: API_KEY
-          required: true
-          schema:
-            type: string
         - name: q
           in: query
           description: query pencarian
@@ -630,12 +581,6 @@ paths:
       summary: 'Mengambil sebagian data resep menurut produk yang digunakan'
       description: 'Mengambil sebagian data resep menurut produk yang digunakan'
       parameters:
-        - name: api_key
-          in: query
-          description: API_KEY
-          required: true
-          schema:
-            type: string
         - name: q
           in: query
           description: query pencarian
