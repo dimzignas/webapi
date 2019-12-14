@@ -2,21 +2,51 @@
 import os
 import uuid
 import datetime
+import functools
 from dataclasses import dataclass, field
-from typing import Dict
+from typing import Dict, Union, Callable
 from binascii import hexlify
 
 # 3rd party modules
-from flask import make_response, abort, session
+from flask import make_response, abort, session, current_app
 
 # local modules
 from config import ma
 from models.model import Model
 from common.utils import Utils
 import models.user.errors as UserErrors
-from models.user.decorators import requires_admin, requires_login
+# from models.user.decorators import requires_admin, requires_login
 
 __author__ = 'dimz'
+
+
+# ----------- function as decorator -----------
+def requires_login(f: Callable) -> Callable:
+    @functools.wraps(f)
+    def decorated_function(api_key: str = None, *args, **kwargs):
+        if not session.get('email'):
+            if api_key and api_key != '':
+                try:
+                    User.is_api_key_valid(api_key)
+                except UserErrors.UserError as e:
+                    abort(e.status_code, e.message)
+            else:
+                # abort(400, 'Anda memerlukan API_KEY untuk dapat mengakses ini')
+                abort(403, 'Anda perlu login untuk dapat mengakses ini')
+        User.update_logging_user()
+        return f(*args, **kwargs)
+
+    return decorated_function
+
+
+def requires_admin(f: Callable) -> Callable:
+    @functools.wraps(f)
+    def decorated_function(api_key: str = None, *args, **kwargs):
+        if session.get('email') != current_app.config.get('ADMIN', ''):
+            abort(403, 'Anda perlu menjadi Administrator untuk dapat mengakses ini')
+        return f(*args, **kwargs)
+
+    return decorated_function
 
 
 class UserSchema(ma.Schema):
@@ -42,7 +72,7 @@ class User(Model):
         return user_schema.dump(self)
 
     @classmethod
-    def get_by_name(cls, username: str):
+    def get_by_name(cls, username: str) -> Union["User", None]:
         try:
             return cls.find_one_by("username", username)
         except TypeError:
@@ -64,12 +94,11 @@ class User(Model):
 
     @classmethod
     def is_login_valid(cls, email: str, password: str) -> bool:
-        """
-        This method verifies that an e-mail/password combo (as sent by the site forms) is valid or not.
+        """This method verifies that an e-mail/password combo (as sent by the site forms) is valid or not.
         Checks that the e-mail exists, and that the password associated to that e-mail is correct.
         @param email: The user's email
         @param password: The password
-        @return: True if valid, an exception otherwise
+        @return: user model if valid, an exception otherwise
         """
         user = cls.find_by_email(email)
 
@@ -78,20 +107,19 @@ class User(Model):
             raise UserErrors.IncorrectPasswordError(400, "Your password was wrong.")
         return True
 
-    @classmethod
-    def is_api_key_valid(cls, api_key: str, password: str) -> bool:
-        """
-        This method verifies that an e-mail/api_key combo (as sent by the site forms) is valid or not.
-        Checks that the e-mail exists, and that the api_key associated to that e-mail is correct.
+    @staticmethod
+    def is_api_key_valid(api_key: str) -> bool:
+        """This method verifies that an api_key (as sent by the site forms) is valid or not.
+        Checks that the api_key exists.
         @param api_key: The api_key
-        @param password: The user's password
-        @return: True if valid, an exception otherwise
+        @return: user model if valid, an exception otherwise
         """
-        user = cls.find_by_api_key(api_key)
+        user = User.find_by_api_key(api_key)
 
-        if not Utils.check_hashed_password(password, user.password):
-            # Tell the user that their password is wrong
-            raise UserErrors.IncorrectPasswordError(400, "Your password was wrong.")
+        if user is None:
+            # Tell the user that their api_key is wrong
+            raise UserErrors.InvalidApiKeyError(400, "API_KEY tidak valid")
+        session['email'] = user.email
         return True
 
     @staticmethod
@@ -101,11 +129,11 @@ class User(Model):
         user_now.hits = user_now.hits + 1
         user_now.save_to_mongo()
 
+    # ----------- function to answer API endpoint -----------
     @classmethod
     def register_user(cls, user: Dict):
-        """
-        This method registers a user using e-mail and password.
-        @param user:
+        """This method registers a user using e-mail and password.
+        @param user: user dengan parameter e-mail dan password
         @return: 201 if registered successfully, or 400 or 409 otherwise (exceptions can also be raised)
         """
         username = user.get('username')
@@ -135,7 +163,7 @@ class User(Model):
             abort(e.status_code, e.message)
 
     @staticmethod
-    def login_user_with_password(user: Dict):
+    def login_user(user: Dict):
         try:
             if User.is_login_valid(user.get('email'), user.get('password')):
                 session['email'] = user.get('email')
@@ -145,22 +173,14 @@ class User(Model):
             abort(e.status_code, e.message)
 
     @staticmethod
-    def login_user_with_api_key(user: Dict):
-        try:
-            if User.is_api_key_valid(user.get('api_key'), user.get('password')):
-                user_ = User.find_by_api_key(user.get('api_key'))
-                session['email'] = user_.email
-                User.update_logging_user()
-                return make_response("Anda berhasil login dengan api_key: {}.".format(user.get('api_key')), 200)
-        except UserErrors.UserError as e:
-            abort(e.status_code, e.message)
-
-    @staticmethod
     @requires_login
     @requires_admin
-    def read_all():
-        User.update_logging_user()
-
+    def read_all(api_key: str = None):
+        """Fungsi ini merespon API pada endpoint /api/v1.0/user/{username}, yaitu menghapus pengguna dengan username
+        dari database.
+        @param api_key: String API_KEY
+        @return: JSON hasil pencarian user
+        """
         # Create the list of stores from our data
         user = User.all()
 
@@ -177,14 +197,13 @@ class User(Model):
 
     @staticmethod
     @requires_login
-    def read_one(username: str):
+    def read_one(username: str, api_key: str = None):
         """Fungsi ini merespon API pada endpoint /api/v1.0/user/{username}, yaitu dengan mencari satu pengguna dengan
         parameter username.
         @param username: String id sebagai acuan pencarian toko pada database
+        @param api_key: String API_KEY
         @return: Data Pengguna sebagai hasil pencarian
         """
-        User.update_logging_user()
-
         # Build the initial query
         try:
             user = User.get_by_name(username)
@@ -205,15 +224,14 @@ class User(Model):
 
     @staticmethod
     @requires_login
-    def update(username: str, user: Dict):
+    def update(username: str, user: Dict, api_key: str = None):
         """Fungsi ini merespon API pada endpoint /api/v1.0/user/{username}, yaitu untuk melakukan update data pengguna
         pada parameter username, nama_lengkap, dan email
         @param username: String id sebagai acuan pencarian toko pada database
         @param user: Data mengenai toko yang hendak diperbarui sesuai schema
+        @param api_key: String API_KEY
         @return: 200 on success, 404 on not found, 409 on email used by other user
         """
-        User.update_logging_user()
-
         # Get the user requested from the db into session
         try:
             update_user = User.get_by_name(username)
@@ -255,10 +273,11 @@ class User(Model):
 
     @staticmethod
     @requires_login
-    def delete(username: str):
+    def delete(username: str, api_key: str = None):
         """Fungsi ini merespon API pada endpoint /api/v1.0/user/{username}, yaitu menghapus pengguna dengan username
         dari database.
         @param username: String username sebagai acuan pencarian pengguna pada database
+        @param api_key: String API_KEY
         @return: 200 on success, 404 on not found
         """
         # Get the user requested
@@ -280,15 +299,14 @@ class User(Model):
 
     @staticmethod
     @requires_login
-    def reset_password(username: str, user: Dict):
+    def reset_password(username: str, user: Dict, api_key: str = None):
         """Fungsi ini merespon API pada endpoint /api/v1.0/user/{username}/reset_password, yaitu melakukan reset
         password pengguna.
         @param username: String id sebagai acuan pencarian toko pada database
         @param user: Data mengenai toko yang hendak diperbarui sesuai schema
+        @param api_key: String API_KEY
         @return: 200 on success, 404 on not found
         """
-        User.update_logging_user()
-
         # Get the user requested from the db into session
         try:
             update_user = User.get_by_name(username)

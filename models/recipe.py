@@ -7,13 +7,12 @@ from dataclasses import dataclass, field
 from typing import Dict
 
 # 3rd party modules
-from flask import abort
+from flask import abort, make_response
 from marshmallow import fields
 
 # local modules
 from config import ma
-from models.user.user import User
-from models.user.decorators import requires_login
+from models.user.user import requires_login
 
 
 class RecipeSchema(ma.Schema):
@@ -638,20 +637,24 @@ class Recipe(metaclass=ABCMeta):
             if pattern.search(rec['nama_resep'].lower()) is not None:
                 recipes_.append(rec)
 
-        # Serialize the data for the response
-        recipe_schema = RecipeSchema()
-        data = recipe_schema.dump(recipes_.pop(0))
+        if len(recipes_) == 0:
+            data = None
+        else:
+            # Serialize the data for the response
+            recipe_schema = RecipeSchema()
+            data = recipe_schema.dump(recipes_.pop(0))
+
         return data
 
+    # ----------- function to answer API endpoint -----------
     @staticmethod
     @requires_login
-    def read_produk(q: str):
+    def read_produk(q: str, api_key: str = None):
         """Fungsi ini merespon API pada endpoint /api/v1.0/resep/produk, yaitu mencari resep yang menggunakan produk
         tertentu. Resep didapat dari pencarian menggunakan API eksternal.
+        @param api_key: String API_KEY
         @param q: Nama resep yang digunakan dalam pencarian
         """
-        User.update_logging_user()
-
         # ambil resep dari API pihak ketiga
         recipes = Recipe.read_all_resep('')
         recipes_ = []
@@ -668,7 +671,7 @@ class Recipe(metaclass=ABCMeta):
 
         if recipes_ is None:
             # Bila tidak ditemukan sama sekali
-            return abort(204, "Tidak ditemukan resep dengan parameter nama produk yang telah diberikan.")
+            return make_response("Tidak ditemukan resep dengan parameter nama produk yang telah diberikan.", 204)
         else:
             # Serialize the data for the response
             recipes_schema = RecipeSchema(many=True)

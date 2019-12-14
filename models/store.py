@@ -1,7 +1,7 @@
 # System modules
 import uuid
 from dataclasses import dataclass, field
-from typing import Dict
+from typing import Dict, Union
 
 # 3rd party modules
 from flask import make_response, abort
@@ -9,8 +9,7 @@ from flask import make_response, abort
 # local modules
 from config import ma
 from models.model import Model
-from models.user.user import User
-from models.user.decorators import requires_login, requires_admin
+from models.user.user import requires_login, requires_admin
 
 
 class StoreSchema(ma.Schema):
@@ -33,43 +32,44 @@ class Store(Model):
         return store_schema.dump(self)
 
     @classmethod
-    def get_by_name(cls, nama_toko: str) -> "Store" or None:
+    def get_by_name(cls, nama_toko: str) -> Union["Store", None]:
         try:
             return cls.find_one_by("nama_toko", nama_toko)
         except TypeError:
             return None
 
+    # ----------- function to answer API endpoint -----------
     @staticmethod
     @requires_login
-    def read_all():
+    def read_all(api_key: str = None):
         """Fungsi ini merespon API pada endpoint /api/v1.0/stores, yaitu dengan mencari semua data toko dalam database.
+        @param api_key: String API_KEY
         @return: semua hasil pencarian toko
         """
-        User.update_logging_user()
-
         # Create the list of stores from our data
-        store = Store.all()
+        try:
+            store = Store.all()
 
-        if store.count() == 0:
-            # Bila tidak ditemukan sama sekali
-            return abort(204, "Tidak ditemukan toko dengan parameter yang telah diberikan.")
-        else:
+            if len(store) == 0:
+                # Bila tidak ditemukan sama sekali
+                raise TypeError
+
             # Serialize the data for the response
             store_schema = StoreSchema(many=True)
             data = store_schema.dump(store)
-            User.update_logging_user()
             return data
+        except TypeError:
+            return make_response("Tidak ditemukan toko dengan parameter yang telah diberikan.", 204)
 
     @staticmethod
     @requires_login
-    def read_one(store_id: str):
+    def read_one(store_id: str, api_key: str = None):
         """Fungsi ini merespon API pada endpoint /api/v1.0/stores/{store_id}, yaitu dengan mencari satu toko dengan
         parameter toko_id.
+        @param api_key: String API_KEY
         @param store_id: String id sebagai acuan pencarian toko pada database
         @return: Toko hasil pencarian
         """
-        User.update_logging_user()
-
         # Build the initial query
         try:
             store = Store.get_by_id(store_id)
@@ -90,14 +90,13 @@ class Store(Model):
     @staticmethod
     @requires_login
     @requires_admin
-    def create(store: Dict):
+    def create(store: Dict, api_key: str = None):
         """Fungsi ini merespon API pada endpoint /api/v1.0/stores, yaitu dengan membuat toko berdasarkan parameter
         tertentu.
+        @param api_key: String API_KEY
         @param store: Data mengenai toko yang hendak dibuat sesuai schema
         @return: 201 on success, 409 on store exists
         """
-        User.update_logging_user()
-
         nama_toko = store.get('nama_toko')
         existing_store = Store.get_by_name(nama_toko)
 
@@ -122,14 +121,13 @@ class Store(Model):
     @staticmethod
     @requires_login
     @requires_admin
-    def update(store_id: str, store: Dict):
+    def update(store_id: str, store: Dict, api_key: str = None):
         """Fungsi ini merespon API pada endpoint /api/v1.0/stores/{store_id}
+        @param api_key: String API_KEY
         @param store_id: String id sebagai acuan pencarian toko pada database
         @param store: Data mengenai toko yang hendak diperbarui sesuai schema
         @return: 200 on success, 404 on not found, 409 on store exists
         """
-        User.update_logging_user()
-
         # Get the store requested from the db into session
         try:
             update_store = Store.get_by_id(store_id)
@@ -168,9 +166,10 @@ class Store(Model):
     @staticmethod
     @requires_login
     @requires_admin
-    def delete(store_id: str):
+    def delete(store_id: str, api_key: str = None):
         """Fungsi ini merespon API pada endpoint /api/v1.0/stores/{store_id}, yaitu menghapus toko dengan store_id dari
         database.
+        @param api_key: String API_KEY
         @param store_id: String id sebagai acuan pencarian toko pada database
         @return: 200 on success, 404 on not found
         """
