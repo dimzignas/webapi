@@ -18,3 +18,7 @@ class InvalidEmailError(UserError):
 
 class IncorrectPasswordError(UserError):
     pass
+
+
+class InvalidApiKeyError(UserError):
+    pass
