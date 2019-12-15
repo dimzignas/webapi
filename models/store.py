@@ -9,7 +9,7 @@ from flask import make_response, abort
 # local modules
 from config import ma
 from models.model import Model
-from models.user.user import requires_login, requires_admin
+from models.user import requires_login, requires_admin
 
 
 class StoreSchema(ma.Schema):
@@ -57,9 +57,9 @@ class Store(Model):
             # Serialize the data for the response
             store_schema = StoreSchema(many=True)
             data = store_schema.dump(store)
-            return data
+            return data, 200
         except TypeError:
-            return make_response("Tidak ditemukan toko dengan parameter yang telah diberikan.", 204)
+            return make_response({"message": "Tidak ditemukan toko dengan parameter yang telah diberikan."}, 204)
 
     @staticmethod
     @requires_login
@@ -81,7 +81,7 @@ class Store(Model):
             # Serialize the data for the response
             store_schema = StoreSchema()
             data = store_schema.dump(store)
-            return data
+            return data, 200
 
         # Otherwise, nope, didn't find that store
         else:
@@ -182,7 +182,7 @@ class Store(Model):
         # Did we find a store?
         if store is not None:
             store.remove_from_mongo()
-            return make_response("Toko dengan id {} berhasil dihapus.".format(store_id), 200)
+            return make_response({"message": "Toko dengan id {} berhasil dihapus.".format(store_id)}, 200)
 
         # Otherwise, nope, didn't find that store
         else:

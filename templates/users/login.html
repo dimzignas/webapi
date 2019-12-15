@@ -4,7 +4,8 @@
 <header>
     <h1>Login</h1>
 </header>
-<section class="create-store-form">
+<section class="login-form">
+	<div class="alert" role="alert" style='visibility: hidden; display: none;'></div>
     <div class="form">
         <div class="form-group">
             <label for="email">Email address</label>
@@ -14,7 +15,16 @@
             <label for="password">Password</label>
             <input type="password" class="form-control" name="password" id="password" placeholder="Password">
         </div>
-        <button type="submit" class="btn btn-primary">Log in</button>
+        <button type="submit" class="btn btn-primary" id="submit">Log in</button>
     </div>
 </section>
+<form id="pre_data_profile" action="{{ url_for('users.profile') }}" method="post">
+	<input type="hidden" id="uname" name="uname" value="">
+	<input type="hidden" id="key" name="key" value="">
+</form>
+{% endblock %}
+
+{% block javascript %}
+{{ super() }}
+<script src="{{ url_for('static', filename='js/login.js') }}"></script>
 {% endblock %}

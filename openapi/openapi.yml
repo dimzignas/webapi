@@ -118,9 +118,6 @@ paths:
               x-body-name: user
               type: object
               properties:
-                username:
-                  type: string
-                  description: Username pengguna
                 nama_lengkap:
                   type: string
                   description: Nama lengkap pengguna
@@ -128,7 +125,6 @@ paths:
                   type: string
                   description: Email pengguna
               required:
-                - username
                 - nama_lengkap
                 - email
     delete:
@@ -658,10 +654,6 @@ components:
   schemas:
     User:
       type: object
-      required:
-        - username
-        - nama_lengkap
-        - email
       properties:
         username:
           type: string
@@ -684,10 +676,6 @@ components:
           example: 12
     Store:
       type: object
-      required:
-        - nama_toko
-        - deskripsi
-        - link_toko
       properties:
         _id:
           type: string
@@ -703,20 +691,6 @@ components:
           example: 'http://tokofuland.com'
     Produk:
       type: object
-      required:
-        - sumber
-        - nama_produk
-        - link_produk
-        - deskripsi
-        - thumb
-        - harga_unit
-        - harga_awal
-        - harga
-        - discount
-        - qty
-        - qty_unit
-        - nama_toko
-        - link_toko
       properties:
         _id:
           type: string
@@ -765,13 +739,6 @@ components:
           example: 'http://mydepartmentstore.com/toko/toko-fuland'
     Resep:
       type: object
-      required:
-        - resep_id
-        - nama_resep
-        - penulis
-        - tags
-        - timestamp
-        - bahan
       properties:
         resep_id:
           type: string
@@ -789,13 +756,6 @@ components:
             $ref: '#/components/schemas/Bahan'
     Bahan:
       type: object
-      required:
-        - bahan_id
-        - nama_bahan
-        - kuantitas
-        - satuan
-        - timestamp
-        - resep_id
       properties:
         bahan_id:
           type: string

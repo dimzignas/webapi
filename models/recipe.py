@@ -12,7 +12,7 @@ from marshmallow import fields
 
 # local modules
 from config import ma
-from models.user.user import requires_login
+from models.user import requires_login
 
 
 class RecipeSchema(ma.Schema):
@@ -671,9 +671,9 @@ class Recipe(metaclass=ABCMeta):
 
         if recipes_ is None:
             # Bila tidak ditemukan sama sekali
-            return make_response("Tidak ditemukan resep dengan parameter nama produk yang telah diberikan.", 204)
+            return make_response({"message": "Tidak ditemukan resep dengan parameter nama produk yang telah diberikan."}, 204)
         else:
             # Serialize the data for the response
             recipes_schema = RecipeSchema(many=True)
             data = recipes_schema.dump(recipes_)
-            return data
+            return data, 200

@@ -1,6 +1,6 @@
 import os
 import uuid
-from flask import render_template
+from flask import render_template, session
 from config import connex_app, app
 from common.database import Database
 from views.users import user_blueprint
@@ -27,7 +27,8 @@ def init_db():
 # Create a URL route in our application for "/"
 @app.route("/")
 def home():
-    return render_template("home.html")
+    is_logged_in = False if not session.get('email') else True
+    return render_template("home.html", is_logged_in=is_logged_in)
 
 
 if __name__ == '__main__':

@@ -4,8 +4,8 @@
 <header>
     <h1>Register</h1>
 </header>
-<section class="create-store-form">
-    <div class="alert" visibility="hidden" role="alert"></div>
+<section class="register-form">
+    <div class="alert" role="alert" style='visibility: hidden; display: none;'></div>
     <div class="form">
         <div class="form-group">
             <label for="username">Username :</label>
@@ -35,9 +35,13 @@
         <button type="submit" class="btn btn-primary" id="submit">Daftar</button>
     </div>
 </section>
+<form id="pre_data_profile" action="{{ url_for('users.profile') }}" method="post">
+	<input type="hidden" id="uname" name="uname" value="">
+	<input type="hidden" id="key" name="key" value="">
+</form>
 {% endblock %}
 
 {% block javascript %}
 {{ super() }}
-<script src="/static/js/register.js"></script>
+<script src="{{ url_for('static', filename='js/register.js') }}"></script>
 {% endblock %}

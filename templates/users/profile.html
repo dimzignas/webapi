@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+<header>
+    <h1>Profil User</h1>
+</header>
+<section class="profile-form">
+	<table class="table table-striped table-hover mt-4">
+		<thead>
+			<tr>
+				<th scope="col">Key</th>
+				<th scope="col">Value</th>
+			</tr>
+		</thead>
+		<tbody></tbody>
+	</table>
+</section>
+<form id="pre-data-profile">
+	<input type="hidden" id="uname" name="uname" value="{{ uname }}">
+	<input type="hidden" id="key" name="key" value="{{ api_key }}">
+</form>
+{% endblock %}
+
+{% block javascript %}
+{{ super() }}
+<script src="{{ url_for('static', filename='js/profile.js') }}"></script>
+{% endblock %}

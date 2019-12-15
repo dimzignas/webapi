@@ -10,7 +10,7 @@ from flask import make_response, abort
 from config import ma
 from models.model import Model
 from models.recipe import Recipe
-from models.user.user import requires_login
+from models.user import requires_login
 from common.database import Database
 
 __author__ = 'dimz'
@@ -97,12 +97,12 @@ class Product(Model):
 
         if produk.count() == 0:
             # Bila tidak ditemukan sama sekali
-            return make_response("Tidak ditemukan produk dengan parameter yang telah diberikan.", 204)
+            return make_response({"message": "Tidak ditemukan produk dengan parameter yang telah diberikan."}, 204)
         else:
             # Serialize the data for the response
             product_schema = ProductSchema(many=True)
             data = product_schema.dump(produk)
-            return data
+            return data, 200
 
     @staticmethod
     @requires_login
@@ -141,12 +141,12 @@ class Product(Model):
 
         if produk.count() == 0:
             # Bila tidak ditemukan sama sekali
-            return make_response("Tidak ditemukan produk dengan parameter yang telah diberikan.", 204)
+            return make_response({"message": "Tidak ditemukan produk dengan parameter yang telah diberikan."}, 204)
         else:
             # Serialize the data for the response
             product_schema = ProductSchema(many=True)
             data = product_schema.dump(produk)
-            return data
+            return data, 200
 
     @staticmethod
     @requires_login
@@ -183,9 +183,9 @@ class Product(Model):
 
         if produk.count() == 0:
             # Bila tidak ditemukan sama sekali
-            return make_response("Tidak ditemukan produk dengan parameter yang telah diberikan.", 204)
+            return make_response({"message": "Tidak ditemukan produk dengan parameter yang telah diberikan."}, 204)
         else:
             # Serialize the data for the response
             product_schema = ProductSchema(many=True)
             data = product_schema.dump(produk)
-            return data
+            return data, 200

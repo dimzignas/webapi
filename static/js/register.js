@@ -21,7 +21,6 @@ ns.model = (function () {
                 dataType: 'json',
                 data: JSON.stringify(user)
             };
-            console.log('masuk fungsi register')
             return $.ajax(ajax_options);
         }
     };
@@ -38,25 +37,18 @@ ns.view = (function () {
 
     // return the API
     return {
-        NEW_NOTE: NEW_NOTE,
-        EXISTING_NOTE: EXISTING_NOTE,
         reset: function () {
-            console.log('masuk fungsi reset')
-            $username.text('');
-            $password.val('');
-            $nama_lengkap.val('');
-            $email.val('');
-            $username.val('').focus();
+            $username.focus();
         },
         alert: function (msg, alert_status) {
-            console.log('masuk fungsi alert')
             $('.alert')
                 .text(msg)
-                .css('class', 'alert ' + alert_status)
-                .css('visibility', 'visible');
+                .attr('class', 'alert ' + alert_status)
+                .css('visibility', 'visible')
+				.css('display', 'block');
             setTimeout(function () {
                 $('.alert').fadeOut();
-            }, 2000)
+            }, 8000);
         }
     };
 }());
@@ -70,25 +62,24 @@ ns.controller = (function (m, v) {
         $username = $('#username'),
         $password = $('#password'),
         $email = $('#email'),
-        $nama_lengkap = $('#nama_lengkap');
+        $nama_lengkap = $('#nama_lengkap'),
+        $uname = $('#uname'),
+        $key = $('#key'),
+        $form_pre = $('#pre_data_profile');
 
     // Get the data from the model after the controller is done initializing
     setTimeout(function () {
         view.reset();
-    }, 100)
+    }, 100);
 
     // generic error handler
     function error_handler(xhr, textStatus, errorThrown) {
-        console.log('masuk fungsi error handler')
         let error_msg = `${textStatus}: ${errorThrown} - ${xhr.responseJSON.detail}`;
-
         view.alert(error_msg, 'alert-danger');
-        console.log(error_msg);
     }
 
     // Create our event handlers
     $('#submit').click(function (e) {
-        console.log('masuk fungsi submit')
         let username = $username.val(),
             password = $password.val(),
             nama_lengkap = $nama_lengkap.val(),
@@ -103,8 +94,12 @@ ns.controller = (function (m, v) {
             'email': email,
         })
             .done(function(data) {
-                view.alert('Berhasil mendaftar', 'alert-success');
-                console.log(data)
+                view.alert('Berhasil mendaftar. Anda akan segera diarahkan ke halaman profil.', 'alert-success');
+                $uname.val(data.username);
+                $key.val(data.api_key);
+                setTimeout(function () {
+                    $form_pre.submit();
+                }, 3000);
             })
             .fail(function(xhr, textStatus, errorThrown) {
                 error_handler(xhr, textStatus, errorThrown);
