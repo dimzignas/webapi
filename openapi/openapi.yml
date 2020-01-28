@@ -652,42 +652,159 @@ paths:
           description: Tidak dapat ditemukan resep dengan parameter yang telah diberikan
 components:
   schemas:
-    InventoryItem:
+    User:
       type: object
       required:
-        - id
-        - name
-        - manufacturer
-        - releaseDate
+        - username
+        - nama_lengkap
+        - email
       properties:
-        id:
+        username:
           type: string
-          format: uuid
-          example: d290f1ee-6c54-4b01-90e6-d701748f0851
-        name:
+          example: 'fuland'
+        nama_lengkap:
           type: string
-          example: Widget Adapter
-        releaseDate:
+          example: 'Fuland Gundah Gulana'
+        email:
+          type: string
+          example: 'fuland.gundah@example.mail.com'
+        last_login:
           type: string
           format: date-time
-          example: '2016-08-29T09:12:33.001Z'
-        manufacturer:
-          $ref: '#/components/schemas/Manufacturer'
-    Manufacturer:
-      required:
-        - name
-      properties:
-        name:
+          example: '2019-10-29 09:12'
+        api_key:
           type: string
-          example: ACME Corporation
-        homePage:
-          type: string
-          format: url
-          example: 'https://www.acme-corp.com'
-        phone:
-          type: string
-          example: 408-867-5309
+          example: 'd290f1ee-6c54-4b01-90e6-d701748f0851'
+        hits:
+          type: integer
+          example: 12
+    Store:
       type: object
+      required:
+        - nama_toko
+        - deskripsi
+        - link_toko
+      properties:
+        _id:
+          type: string
+          example: 'd290f1ee-6c54-4b01-90e6-d701748f0851'
+        nama_toko:
+          type: string
+          example: 'Toko Fuland'
+        deskripsi:
+          type: string
+          example: 'Toko Kelontong Fuland'
+        link_toko:
+          type: string
+          example: 'http://tokofuland.com'
+    Produk:
+      type: object
+      required:
+        - sumber
+        - nama_produk
+        - link_produk
+        - deskripsi
+        - thumb
+        - harga_unit
+        - harga_awal
+        - harga
+        - discount
+        - qty
+        - qty_unit
+        - nama_toko
+        - link_toko
+      properties:
+        _id:
+          type: string
+          example: 'd290f1ee-6c54-4b01-90e6-d701748f0851'
+        sumber:
+          type: string
+          example: 'mydepartmentstore.com'
+        tgl_crawl:
+          type: string
+          example: '2019-11-10 12:14'
+        nama_produk:
+          type: string
+          example: 'Beef Giling'
+        link_produk:
+          type: string
+          example: 'https://mydepartmentstore.com/produk/beef-giling-tanpa-pengawet'
+        deskripsi:
+          type: string
+          example: 'Daging sapi giling'
+        thumb:
+          type: string
+          example: 'https://mydepartmentstore.com/gambar/beef-giling-tanpa-pengawet.jpg'
+        harga_unit:
+          type: number
+          example: '20000'
+        harga_awal:
+          type: number
+          example: '40000'
+        harga:
+          type: number
+          example: '35000'
+        discount:
+          type: string
+          example: '12.5%'
+        qty:
+          type: string
+          example: '1 bungkus'
+        qty_unit:
+          type: string
+          example: '1 bungkus'
+        nama_toko:
+          type: string
+          example: 'Toko Fuland'
+        link_toko:
+          type: string
+          example: 'http://mydepartmentstore.com/toko/toko-fuland'
+    Resep:
+      type: object
+      required:
+        - resep_id
+        - nama_resep
+        - penulis
+        - tags
+        - timestamp
+        - bahan
+      properties:
+        resep_id:
+          type: string
+        nama_resep:
+          type: string
+        penulis:
+          type: string
+        tags:
+          type: string
+        timestamp:
+          type: string
+        bahan:
+          type: array
+          items:
+            $ref: '#/components/schemas/Bahan'
+    Bahan:
+      type: object
+      required:
+        - bahan_id
+        - nama_bahan
+        - kuantitas
+        - satuan
+        - timestamp
+        - resep_id
+      properties:
+        bahan_id:
+          type: string
+        nama_bahan:
+          type: string
+        kuantitas:
+          type: string
+        satuan:
+          type: string
+        timestamp:
+          type: string
+        resep_id:
+          type: string
   securitySchemes:
     token:
       type: apiKey
