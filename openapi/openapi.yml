@@ -652,120 +652,44 @@ paths:
           description: Tidak dapat ditemukan resep dengan parameter yang telah diberikan
 components:
   schemas:
-    User:
+    InventoryItem:
       type: object
+      required:
+        - id
+        - name
+        - manufacturer
+        - releaseDate
       properties:
-        username:
+        id:
           type: string
-          example: 'fuland'
-        nama_lengkap:
+          format: uuid
+          example: d290f1ee-6c54-4b01-90e6-d701748f0851
+        name:
           type: string
-          example: 'Fuland Gundah Gulana'
-        email:
-          type: string
-          example: 'fuland.gundah@example.mail.com'
-        last_login:
+          example: Widget Adapter
+        releaseDate:
           type: string
           format: date-time
-          example: '2019-10-29 09:12'
-        api_key:
-          type: string
-          example: 'd290f1ee-6c54-4b01-90e6-d701748f0851'
-        hits:
-          type: integer
-          example: 12
-    Store:
-      type: object
+          example: '2016-08-29T09:12:33.001Z'
+        manufacturer:
+          $ref: '#/components/schemas/Manufacturer'
+    Manufacturer:
+      required:
+        - name
       properties:
-        _id:
+        name:
           type: string
-          example: 'd290f1ee-6c54-4b01-90e6-d701748f0851'
-        nama_toko:
+          example: ACME Corporation
+        homePage:
           type: string
-          example: 'Toko Fuland'
-        deskripsi:
+          format: url
+          example: 'https://www.acme-corp.com'
+        phone:
           type: string
-          example: 'Toko Kelontong Fuland'
-        link_toko:
-          type: string
-          example: 'http://tokofuland.com'
-    Produk:
+          example: 408-867-5309
       type: object
-      properties:
-        _id:
-          type: string
-          example: 'd290f1ee-6c54-4b01-90e6-d701748f0851'
-        sumber:
-          type: string
-          example: 'mydepartmentstore.com'
-        tgl_crawl:
-          type: string
-          example: '2019-11-10 12:14'
-        nama_produk:
-          type: string
-          example: 'Beef Giling'
-        link_produk:
-          type: string
-          example: 'https://mydepartmentstore.com/produk/beef-giling-tanpa-pengawet'
-        deskripsi:
-          type: string
-          example: 'Daging sapi giling'
-        thumb:
-          type: string
-          example: 'https://mydepartmentstore.com/gambar/beef-giling-tanpa-pengawet.jpg'
-        harga_unit:
-          type: number
-          example: '20000'
-        harga_awal:
-          type: number
-          example: '40000'
-        harga:
-          type: number
-          example: '35000'
-        discount:
-          type: string
-          example: '12.5%'
-        qty:
-          type: string
-          example: '1 bungkus'
-        qty_unit:
-          type: string
-          example: '1 bungkus'
-        nama_toko:
-          type: string
-          example: 'Toko Fuland'
-        link_toko:
-          type: string
-          example: 'http://mydepartmentstore.com/toko/toko-fuland'
-    Resep:
-      type: object
-      properties:
-        resep_id:
-          type: string
-        nama_resep:
-          type: string
-        penulis:
-          type: string
-        tags:
-          type: string
-        timestamp:
-          type: string
-        bahan:
-          type: array
-          items:
-            $ref: '#/components/schemas/Bahan'
-    Bahan:
-      type: object
-      properties:
-        bahan_id:
-          type: string
-        nama_bahan:
-          type: string
-        kuantitas:
-          type: string
-        satuan:
-          type: string
-        timestamp:
-          type: string
-        resep_id:
-          type: string
+  securitySchemes:
+    token:
+      type: apiKey
+      name: api_key
+      in: header
